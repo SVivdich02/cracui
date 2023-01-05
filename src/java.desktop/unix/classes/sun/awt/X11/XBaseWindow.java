@@ -135,6 +135,7 @@ public class XBaseWindow {
      * initialize params.
      */
     void preInit(XCreateWindowParams params) {
+        System.out.println("I am in preInit XBaseWindow");
         state_lock = new StateLock();
         embedded = Boolean.TRUE.equals(params.get(EMBEDDED));
         visible = Boolean.TRUE.equals(params.get(VISIBLE));
@@ -184,11 +185,26 @@ public class XBaseWindow {
         initialising = InitialiseState.INITIALISING;
         awtUnlock();
 
+        System.out.println("*********************************");
+        System.out.println("In init XBaseWindow params: :" + params);
+
+        StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+
+        java.util.List<String> list = Arrays.stream(stackTraceElements).map(x -> x.getMethodName()).toList();
+        System.out.println("StackTrace:");
+        for (String className: list) {
+            System.out.println(className);
+        }
+
         try {
             if (!Boolean.TRUE.equals(params.get(DELAYED))) {
+                System.out.println("In init XBaseWindow before preInit params.get(VISUAL):" + params.get(VISUAL));
                 preInit(params);
+                System.out.println("In init XBaseWindow after preInit before create params.get(VISUAL):" + params.get(VISUAL));
                 create(params);
+                System.out.println("In init XBaseWindow after create params.get(VISUAL):" + params.get(VISUAL));
                 postInit(params);
+                System.out.println("*********************************");
             } else {
                 instantPreInit(params);
                 delayedParams = params;
@@ -281,6 +297,7 @@ public class XBaseWindow {
      * @throws IllegalArgumentException if params is null
      */
     protected void checkParams(XCreateWindowParams params) {
+        System.out.println("In XBaseWindow checkparams start params.get(Visual) = " + params.get(VISUAL));
         if (params == null) {
             throw new IllegalArgumentException("Window creation parameters are null");
         }
@@ -300,6 +317,8 @@ public class XBaseWindow {
         // (see X vol. 1, 8.3.3.2)
         eventMask |= XConstants.PropertyChangeMask | XConstants.OwnerGrabButtonMask;
         params.put(EVENT_MASK, Long.valueOf(eventMask));
+
+        System.out.println("In XBaseWindow checkparams end params.get(Visual) = " + params.get(VISUAL));
     }
 
     /**
@@ -325,6 +344,15 @@ public class XBaseWindow {
     private void create(XCreateWindowParams params) {
         XToolkit.awtLock();
         try {
+            System.out.println("IN CREATE XBASEWINDOW");
+            StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+
+            java.util.List<String> list = Arrays.stream(stackTraceElements).map(x -> (x.getClassName() + " " + x.getMethodName())).toList();
+            System.out.println("StackTrace:");
+            for (String className: list) {
+                System.out.println(className);
+            }
+
             XSetWindowAttributes xattr = new XSetWindowAttributes();
             try {
                 checkParams(params);
@@ -357,6 +385,9 @@ public class XBaseWindow {
                 Integer depth = (Integer)params.get(DEPTH);
                 Integer visual_class = (Integer)params.get(VISUAL_CLASS);
                 Long visual = (Long)params.get(VISUAL);
+                // System.out.println("In create XBaseWindow Long visual = " + visual);
+            
+
                 Boolean overrideRedirect = (Boolean)params.get(OVERRIDE_REDIRECT);
                 if (overrideRedirect != null) {
                     xattr.set_override_redirect(overrideRedirect.booleanValue());
@@ -384,6 +415,20 @@ public class XBaseWindow {
                 if (log.isLoggable(PlatformLogger.Level.FINE)) {
                     log.fine("Creating window for " + this + " with the following attributes: \n" + params);
                 }
+
+                // StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+
+                // java.util.List<String> list = Arrays.stream(stackTraceElements).map(x -> (x.getClassName() + " " + x.getMethodName())).toList();
+                // System.out.println("StackTrace:");
+                // for (String className: list) {
+                //     System.out.println(className);
+                // }
+
+                long vis = visual.longValue();
+                //System.out.println("visualId in XBaseWindow.create: ");
+                //XlibWrapper.XGetVisualIdByAddress(XToolkit.getDisplay(), parentWindow.longValue(), vis);
+
+                // System.out.println("below i send visual in XlibWrapper.XCreateWindow with value = " + vis);
                 window = XlibWrapper.XCreateWindow(XToolkit.getDisplay(),
                                                    parentWindow.longValue(),
                                                    scaleUp(bounds.x),
@@ -393,7 +438,8 @@ public class XBaseWindow {
                                                    0, // border
                                                    depth.intValue(), // depth
                                                    visual_class.intValue(), // class
-                                                   visual.longValue(), // visual
+                                                   //visual.longValue(), // visual
+                                                   vis, // visual
                                                    value_mask,  // value mask
                                                    xattr.pData); // attributes
 
@@ -650,6 +696,7 @@ public class XBaseWindow {
     }
 
     public void xSetVisible(boolean visible) {
+        System.out.println("I am in xSetVisible XBaseWindow");
         if (log.isLoggable(PlatformLogger.Level.FINE)) {
             log.fine("Setting visible on " + this + " to " + visible);
         }
@@ -657,9 +704,11 @@ public class XBaseWindow {
         try {
             this.visible = visible;
             if (visible) {
+                System.out.println("I am in xSetVisible XBaseWindow before XlibWrapper.XMapWindow");
                 XlibWrapper.XMapWindow(XToolkit.getDisplay(), getWindow());
             }
             else {
+                System.out.println("I am in xSetVisible XBaseWindow before XlibWrapper.XUnmapWindow");
                 XlibWrapper.XUnmapWindow(XToolkit.getDisplay(), getWindow());
             }
             XlibWrapper.XFlush(XToolkit.getDisplay());

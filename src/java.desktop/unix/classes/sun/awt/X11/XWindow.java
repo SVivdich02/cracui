@@ -212,6 +212,17 @@ class XWindow extends XBaseWindow implements X11ComponentPeer {
     }
 
     void preInit(XCreateWindowParams params) {
+        System.out.println("-------------------------------------------");
+        System.out.println("I am in preInit XWindow");
+
+        StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+
+        java.util.List<String> list = Arrays.stream(stackTraceElements).map(x -> (x.getClassName() + " " + x.getMethodName())).toList();
+        System.out.println("StackTrace:");
+        for (String className: list) {
+            System.out.println(className);
+        }
+
         super.preInit(params);
         reparented = Boolean.TRUE.equals(params.get(REPARENTED));
 
@@ -221,7 +232,11 @@ class XWindow extends XBaseWindow implements X11ComponentPeer {
 
         AwtGraphicsConfigData gData = getGraphicsConfigurationData();
         X11GraphicsConfig config = (X11GraphicsConfig) getGraphicsConfiguration();
+
         XVisualInfo visInfo = gData.get_awt_visInfo();
+        System.out.println("after XVisualInfo in preInit XWindow visInfo = " + visInfo);
+        System.out.println("visInfo id = " + visInfo.get_visualid());
+
         params.putIfNull(EVENT_MASK, XConstants.KeyPressMask | XConstants.KeyReleaseMask
             | XConstants.FocusChangeMask | XConstants.ButtonPressMask | XConstants.ButtonReleaseMask
             | XConstants.EnterWindowMask | XConstants.LeaveWindowMask | XConstants.PointerMotionMask
@@ -237,7 +252,13 @@ class XWindow extends XBaseWindow implements X11ComponentPeer {
         params.putIfNull(COLORMAP, gData.get_awt_cmap());
         params.putIfNull(DEPTH, gData.get_awt_depth());
         params.putIfNull(VISUAL_CLASS, Integer.valueOf(XConstants.InputOutput));
+        
+        System.out.println("in preInit XWindow now i will set visual in param with value = " + visInfo.get_visual() + " and visualId = " + visInfo.get_visualid());
+        System.out.println("before: params.get(VISUAL) = " + params.get(VISUAL));
         params.putIfNull(VISUAL, visInfo.get_visual());
+        System.out.println("after: params.get(VISUAL) = " + params.get(VISUAL));
+        System.out.println("-------------------------------------------");
+
         params.putIfNull(VALUE_MASK, XConstants.CWBorderPixel | XConstants.CWEventMask | XConstants.CWColormap);
         Long parentWindow = (Long)params.get(PARENT_WINDOW);
         if (parentWindow == null || parentWindow.longValue() == 0) {

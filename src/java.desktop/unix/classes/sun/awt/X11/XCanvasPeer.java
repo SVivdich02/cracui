@@ -49,6 +49,7 @@ class XCanvasPeer extends XComponentPeer implements CanvasPeer {
     void preInit(XCreateWindowParams params) {
         super.preInit(params);
         if (SunToolkit.getSunAwtNoerasebackground()) {
+            System.out.println("I am in preInit XCanvasPeer. DISABLE BACKGROUND ERASE");
             disableBackgroundErase();
         }
     }
@@ -59,6 +60,7 @@ class XCanvasPeer extends XComponentPeer implements CanvasPeer {
     public GraphicsConfiguration getAppropriateGraphicsConfiguration(
                                     GraphicsConfiguration gc)
     {
+        System.out.println("I am in getAppropriateGraphicsConfiguration XCanvasPeer");
         if (graphicsConfig == null || gc == null) {
             return gc;
         }

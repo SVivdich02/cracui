@@ -1360,6 +1360,7 @@ public class XComponentPeer extends XWindow implements ComponentPeer, DropTarget
     }
 
     public boolean updateGraphicsData(GraphicsConfiguration gc) {
+        System.out.println("I am in updateGraphicsData XComponentPeer");
         int oldVisual = -1, newVisual = -1;
 
         if (graphicsConfig != null) {

@@ -304,10 +304,42 @@ JNIEXPORT jlong JNICALL Java_sun_awt_X11_XlibWrapper_XCreateWindow
    jlong wclass, jlong visual, jlong valuemask, jlong attributes)
 {
     AWT_CHECK_HAVE_LOCK_RETURN(0);
+    Visual * vis = ((Visual *) jlong_to_ptr(visual));
+
+    printf("In XlibWrapper_XCreateWindow \n");
+    printf("Visual : %p \n", vis);
+    if (vis != NULL) {
+        printf("VisualId : %ld \n", vis->visualid);
+    }
+
+    printf("x : %d \n", x);
+    printf("y : %d \n", y);
+    printf("w : %d \n", w);
+    printf("h : %d \n", h);
+
     return  XCreateWindow((Display *) jlong_to_ptr(display),(Window) window, x, y, w, h,
               border_width, depth, wclass, (Visual *) jlong_to_ptr(visual),
               valuemask, (XSetWindowAttributes *) jlong_to_ptr(attributes));
 }
+
+// /*
+//  * Class:     XlibWrapper
+//  * Method:    XGetVisualIdByAddress
+//  * Signature: (J)V
+//  */
+// JNIEXPORT void JNICALL Java_sun_awt_X11_XlibWrapper_XGetVisualIdByAddress
+// (JNIEnv *env, jclass clazz, jlong visual)
+// {
+//     AWT_CHECK_HAVE_LOCK();
+//     Visual * vis = ((Visual *) jlong_to_ptr(visual));
+
+//     printf("In XlibWrapper_XGetVisualIdByAddress \n");
+//     printf("Visual : %ld \n", (unsigned long)vis);
+//     if (vis != NULL) {
+//         printf("VisualId : %ld \n", vis->visualid);
+//     }
+// }
+
 
 /*
  * Class:     XlibWrapper

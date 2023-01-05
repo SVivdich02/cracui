@@ -800,12 +800,14 @@ public final class XAtom {
      * Property is assumed to be of type WINDOW/32
      */
     public void setWindowProperty(long window, long window_value) {
+        System.out.println("I am in setWindowProperty XAtom");
         if (atom == 0) {
             throw new IllegalStateException("Atom should be initialized");
         }
         checkWindow(window);
         XToolkit.awtLock();
         try {
+            System.out.println("XlibWrapper.larg1 in setWindowProperty = " + XlibWrapper.larg1);
             Native.putWindow(XlibWrapper.larg1, window_value);
             XlibWrapper.XChangeProperty(XToolkit.getDisplay(), window,
                                     atom, XA_WINDOW, 32, XConstants.PropModeReplace,

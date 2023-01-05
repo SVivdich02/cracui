@@ -59,6 +59,15 @@ class XFramePeer extends XDecoratedPeer implements FramePeer {
     }
 
     void preInit(XCreateWindowParams params) {
+        System.out.println("IN PREINIT XFRAMEPEER");
+        StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+
+        java.util.List<String> list = Arrays.stream(stackTraceElements).map(x -> (x.getClassName() + " " + x.getMethodName())).toList();
+        System.out.println("StackTrace:");
+        for (String className: list) {
+            System.out.println(className);
+        }
+
         super.preInit(params);
         Frame target = (Frame)(this.target);
         // set the window attributes for this Frame
